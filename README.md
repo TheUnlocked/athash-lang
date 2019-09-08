@@ -6,7 +6,7 @@ Prounounced "at-hash" or "a-thash"
 
 You must have [typescript](http://www.typescriptlang.org/) and [node.js current](https://nodejs.org/) (at least 12.x.x) installed.
 
-* In the main folder which contains this tsconfig.json, run `tsc`.
+* In the main folder which contains [tsconfig.json](tsconfig.json), run `tsc`.
 * Run `node ./dist/main.js` (or `node dist\main.js` on Windows)
 
 Alternatively, you can debug in [Visual Studio Code](https://code.visualstudio.com/) with the provided [.vscode](.vscode) settings.
