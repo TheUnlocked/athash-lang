@@ -7,7 +7,7 @@ export default class LangInstance {
     global: Scope;
 
     constructor(){
-        const evalCode = (context: Scope, code: LangCode) => pass(context, code.toRawTokens(), ParserModes.SingleExpression);
+        const evalCode = (code: LangCode) => pass(code.context, code.toRawTokens(), ParserModes.SingleExpression);
 
         this.global = new Scope(undefined, {
             ".": LangCode.EMPTY,
@@ -104,19 +104,19 @@ export default class LangInstance {
             "eval": new LangFunction([{name: "code"}], args => {
                 let code = args[0];
                 if (code.type === "code"){
-                    return evalCode(code.context, code);
+                    return evalCode(code);
                 }
                 return LangCode.EMPTY; //temp
             }),
             "while": new LangFunction([{name: "condition", modifier: "@"}, {name: "action", modifier: "@"}], args => {
                 let cond = args[0] as LangCode, action = args[1] as LangCode;
                 while (true){
-                    let condResult = evalCode(cond.context, cond);
+                    let condResult = evalCode(cond);
                     if (condResult.type !== "boolean"){
                         break; // throw error eventually
                     }
                     else if (condResult.value){
-                        evalCode(action.context, action);
+                        evalCode(action);
                     }
                     else{
                         break;
@@ -127,10 +127,10 @@ export default class LangInstance {
             "if": new LangFunction([{name: "condition"}, {name: "then", modifier: "@"}, {name: "otherwise", modifier: "@"}], args => {
                 let cond = args[0] as LangBoolean, then = args[1] as LangCode, otherwise = args[2] as LangCode;
                 if (cond === LangBoolean.TRUE){
-                    return evalCode(then.context, then);
+                    return evalCode(then);
                 }
                 else{
-                    return evalCode(otherwise.context, otherwise);
+                    return evalCode(otherwise);
                 }
             }),
             "at": new LangFunction([{name: "code"}, {name: "index"}], args => {
@@ -153,8 +153,10 @@ export default class LangInstance {
                 console.log(x instanceof LangString ? x.value : x.toString());
                 return LangCode.EMPTY;
             }),
-            "===": new LangFunction([{name: "a"}, {name: "b"}], args => {
-                return args[0] === args[1] ? LangBoolean.TRUE : LangBoolean.FALSE;
+            "===": new LangFunction([{name: "a", modifier: '@'}, {name: "b", modifier: '@'}], args => {
+                let a: LangCode = args[0] as LangCode, b: LangCode = args[1] as LangCode;
+                let obj1 = evalCode(a), obj2 = evalCode(b);
+                return obj1 === obj2 ? LangBoolean.TRUE : LangBoolean.FALSE;
             }),
         });
     }

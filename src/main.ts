@@ -66,4 +66,23 @@ print sum 1 2 3 4 .
 print append @(Hello,) @(World!)
 print push @(1 2 3) 4
 
+let true = == 0 0
+let false = == 0 1
+
+fun not pred = (if pred false true)
+
+fun ops @code = {
+    let result = eval at code 0
+    let i = 1
+    while (not === . (eval at code i)) {
+        if === + (eval at code i) {
+            result = + result eval at code + i 1
+        } .
+        i = + i 2
+    }
+    result
+}
+
+print ops (1 + 2 + 3 + 4)
+
 `);
